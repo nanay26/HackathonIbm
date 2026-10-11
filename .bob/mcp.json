@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "lf-dewan_penilai_proposal": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "uvx",
+        "--with",
+        "mcp^<2.0.0",
+        "mcp-proxy",
+        "--transport",
+        "streamablehttp",
+        "--headers",
+        "x-api-key",
+        "sk-_Zd4S1goflrjTKUVHAvwW5j3iiTbpj9KYJk1S76zXQg",
+        "http://localhost:7860/api/v1/mcp/project/97d82aa8-9c0a-42ca-9ed2-c272b0631ad8/streamable"
+      ]
+    }
+  }
+}

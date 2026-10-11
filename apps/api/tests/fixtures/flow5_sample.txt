@@ -1,0 +1,131 @@
+"""
+Fixture sintetis output Flow 5 (Full Review Orchestrator).
+Digunakan oleh LANGFLOW_MOCK=true dan test parser.
+Struktur mengikuti spesifikasi SDD §11.1.
+"""
+
+===== REVIEWER: METODOLOGI =====
+
+VERDICT: REVISI MAYOR
+
+RINGKASAN:
+Proposal menunjukkan pemilihan metode yang relevan, namun terdapat kelemahan
+signifikan pada desain validasi model dan penjelasan skema pembagian data.
+Beberapa prosedur eksperimen tidak cukup detail untuk dapat direplikasi.
+
+TEMUAN:
+1. [ASPEK: Desain Penelitian & Validasi]
+   Skema 10-fold cross-validation disebutkan tanpa menjelaskan apakah
+   pembagian dilakukan sebelum atau sesudah augmentasi data, sehingga
+   berpotensi menghasilkan data leakage.
+   Rujukan: "validasi dilakukan menggunakan 10-fold cross-validation pada
+   keseluruhan dataset" (BAB 3, hlm. 24)
+
+2. [ASPEK: Kesesuaian Alat & Dataset]
+   Dataset yang digunakan tidak dijelaskan sumber lisensinya; untuk penelitian
+   yang bertujuan dipublikasikan, hal ini dapat menjadi hambatan.
+   Rujukan: "dataset dikumpulkan dari berbagai sumber daring" (BAB 3, hlm. 22)
+
+3. [ASPEK: Reproduksibilitas]
+   Hyperparameter tuning tidak menyebutkan metode pencarian (grid search,
+   random search, atau Bayesian), sehingga eksperimen sulit direplikasi.
+   Rujukan: "hyperparameter disesuaikan untuk mendapatkan performa terbaik"
+   (BAB 3, hlm. 25)
+
+REKOMENDASI PRIORITAS:
+1. Jelaskan secara eksplisit urutan langkah: augmentasi data → pembagian fold,
+   atau pembagian fold → augmentasi per fold.
+2. Cantumkan lisensi dan tautan resmi dataset.
+3. Sebutkan metode hyperparameter tuning beserta rentang nilai yang diuji.
+
+===== REVIEWER: ORISINALITAS =====
+
+VERDICT: REVISI MINOR
+
+RINGKASAN:
+Gap penelitian teridentifikasi namun klaim kebaruan belum cukup terukur.
+Perbandingan dengan pekerjaan terkait perlu diperluas khususnya untuk
+publikasi 2022–2024 yang belum dicakup tinjauan literatur.
+
+TEMUAN:
+1. [ASPEK: Klaim Gap Penelitian]
+   Pernyataan bahwa "belum ada penelitian yang menggabungkan X dan Y" tidak
+   didukung bukti sistematis; pencarian literatur tidak menjelaskan basis data
+   yang digunakan (Scopus/WoS/Google Scholar) maupun rentang tahun.
+   Rujukan: "sejauh pengetahuan penulis, belum ada penelitian yang
+   menggabungkan X dan Y" (BAB 1, hlm. 3)
+
+2. [ASPEK: Kebaruan Kontribusi]
+   Kontribusi teknis yang diklaim (arsitektur hybrid) perlu dibandingkan
+   secara kuantitatif dengan baseline yang representatif, bukan hanya
+   disebutkan secara naratif.
+   Rujukan: "kontribusi utama penelitian ini adalah arsitektur hybrid yang
+   menggabungkan..." (BAB 1, hlm. 4)
+
+3. [ASPEK: Cakupan Tinjauan Literatur]
+   Sebagian besar referensi berasal dari tahun 2018–2021; publikasi relevan
+   2022–2024 tidak tercakup, padahal bidang ini berkembang pesat.
+   Rujukan: tidak ada — observasi dari daftar referensi (BAB 2)
+
+REKOMENDASI PRIORITAS:
+1. Perjelas protokol pencarian literatur: basis data, kata kunci, rentang
+   tahun, dan kriteria inklusi/eksklusi.
+2. Tambahkan tabel perbandingan eksplisit antara proposal ini dengan minimal
+   3 penelitian terkini yang paling dekat.
+3. Perbarui tinjauan literatur dengan referensi 2022–2024.
+
+===== REVIEWER: REVISI =====
+
+VERDICT: REVISI MAYOR
+
+RINGKASAN:
+Terdapat dua isu lintas-bab yang harus diselesaikan sebelum seminar: (1)
+ambiguitas prosedur validasi yang berpotensi invalidasi hasil, dan (2) klaim
+kontribusi yang belum didukung bukti komparatif memadai.
+
+TEMUAN:
+1. [ASPEK: Ambiguitas Data Split untuk 10-Fold CV]
+   Sama seperti yang disorot Reviewer Metodologi: urutan augmentasi vs.
+   pembagian fold tidak dijelaskan, namun dampaknya terhadap validitas
+   klaim akurasi sangat serius dan harus segera diperbaiki.
+   Rujukan: "validasi dilakukan menggunakan 10-fold cross-validation pada
+   keseluruhan dataset" (BAB 3, hlm. 24)
+
+2. [ASPEK: Konsistensi Klaim Kontribusi]
+   Klaim di BAB 1 tentang kebaruan arsitektur tidak dibarengi dengan
+   eksperimen ablasi atau perbandingan baseline di BAB 3.
+   Rujukan: "kontribusi utama penelitian ini adalah arsitektur hybrid yang
+   menggabungkan..." (BAB 1, hlm. 4)
+
+3. [ASPEK: Penulisan & Sistematika]
+   Beberapa sub-bagian BAB 2 tidak memiliki paragraf penutup yang
+   menghubungkan konten ke pertanyaan penelitian.
+   Rujukan: tidak ada — observasi struktural (BAB 2, hlm. 10–18)
+
+REKOMENDASI PRIORITAS:
+1. [KRITIS] Perbaiki prosedur validasi: tentukan dan dokumentasikan urutan
+   augmentasi dan pembagian fold.
+2. [KRITIS] Tambahkan tabel baseline comparison di BAB 3.
+3. [PENTING] Tambahkan paragraf transisi/penutup di setiap sub-bagian BAB 2.
+
+===== TITIK PERDEBATAN =====
+
+1. [ASPEK TERKAIT: Validitas Skema Data Split / 10-Fold CV]
+   Jenis: PENGUATAN SILANG
+   - Reviewer Metodologi: menemukan potensi data leakage akibat urutan
+     augmentasi vs. pembagian fold yang tidak dijelaskan.
+   - Reviewer Orisinalitas: tidak menyinggung.
+   - Reviewer Revisi: menilai isu yang sama sebagai masalah paling kritis
+     yang dapat menginvalidasi seluruh klaim akurasi.
+   Implikasi: Dua reviewer secara independen menyoroti isu ini dari sudut
+   berbeda — ini harus menjadi prioritas perbaikan pertama.
+
+2. [ASPEK TERKAIT: Klaim Kontribusi & Kebaruan]
+   Jenis: PENGUATAN SILANG
+   - Reviewer Metodologi: tidak menyinggung secara eksplisit.
+   - Reviewer Orisinalitas: kontribusi teknis belum dibandingkan secara
+     kuantitatif dengan baseline representatif.
+   - Reviewer Revisi: klaim di BAB 1 tidak dibarengi eksperimen ablasi
+     atau baseline comparison di BAB 3.
+   Implikasi: Kedua reviewer menyoroti bahwa klaim kebaruan/kontribusi
+   tidak didukung bukti komparatif — perlu tabel baseline di BAB 3.

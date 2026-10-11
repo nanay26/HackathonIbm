@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Warm paper and studio tokens ──────────────────────────────────────────── */
+
+@layer base {
+  :root {
+    /* Surfaces */
+    --bg: 244 239 230;
+    --surface: 255 253 248;
+    --surface-2: 247 242 233;
+    --border: 209 201 189;
+
+    /* Text */
+    --fg: 27 26 23;
+    --fg-muted: 91 84 75;
+
+    --accent-from: 37 78 142;
+    --accent-mid: 151 68 44;
+    --accent-to: 53 104 70;
+
+    /* Reviewer colours */
+    --reviewer-metodologi: 37 78 142;
+    --reviewer-orisinalitas: 53 104 70;
+    --reviewer-revisi: 151 68 44;
+
+    /* Semantic */
+    --success: 38 106 71;
+    --warning: 132 66 24;
+    --error: 155 47 42;
+
+    --shadow-rgb: 62 47 29;
+    --paper-grain: 83 69 48;
+    --shadow-1: 0 1px 2px rgba(62, 47, 29, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.76);
+    --shadow-2: 0 2px 5px rgba(62, 47, 29, 0.09), 0 10px 20px rgba(62, 47, 29, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    --shadow-3: 0 3px 7px rgba(62, 47, 29, 0.10), 0 18px 32px rgba(62, 47, 29, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.84);
+    --shadow-4: 0 5px 12px rgba(62, 47, 29, 0.12), 0 28px 52px rgba(62, 47, 29, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  }
+
+  /* Apply base colours */
+  html {
+    color-scheme: light;
+  }
+  body {
+    background-color: rgb(var(--bg));
+    color: rgb(var(--fg));
+    background-image: radial-gradient(rgba(var(--paper-grain), 0.08) 0.55px, transparent 0.7px);
+    background-size: 8px 8px;
+  }
+}
+
+/* ── Tailwind utilities backed by design tokens ────────────────────────────── */
+@layer utilities {
+  .bg-surface   { background-color: rgb(var(--surface)); }
+  .bg-surface-2 { background-color: rgb(var(--surface-2)); }
+  .border-token { border-color: rgb(var(--border)); }
+  .text-fg      { color: rgb(var(--fg)); }
+  .text-muted   { color: rgb(var(--fg-muted)); }
+
+  .paper-surface {
+    background-color: rgb(var(--surface));
+    border: 1px solid rgb(var(--border));
+    box-shadow: var(--shadow-1);
+  }
+
+  .paper-slab {
+    background-color: rgb(var(--surface));
+    border: 1px solid rgb(var(--border));
+    box-shadow: var(--shadow-3);
+    transform-style: preserve-3d;
+  }
+
+  .paper-sidebar {
+    background-color: rgb(var(--surface));
+    box-shadow: 5px 0 18px rgba(var(--shadow-rgb), 0.06), inset -1px 0 0 rgba(var(--paper-grain), 0.12);
+  }
+
+  .shadow-1 { box-shadow: var(--shadow-1); }
+  .shadow-2 { box-shadow: var(--shadow-2); }
+  .shadow-3 { box-shadow: var(--shadow-3); }
+  .shadow-4 { box-shadow: var(--shadow-4); }
+
+  .font-display {
+    font-family: var(--font-display), Georgia, serif;
+  }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Hero fallback gradient ─────────────────────────────────────────────────── */
+.hero-gradient-fallback {
+  background-color: rgb(var(--surface-2));
+  background-image: radial-gradient(rgba(var(--paper-grain), 0.16) 0.65px, transparent 0.8px);
+  background-size: 9px 9px;
+  pointer-events: none;
+}

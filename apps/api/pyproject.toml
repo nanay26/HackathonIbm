@@ -1,0 +1,21 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [".venv", ".venv311", ".venv312", ".venv313"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "PLC", "PLE", "PLW"]
+ignore = ["E501"]  # line length handled by formatter
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
