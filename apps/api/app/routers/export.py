@@ -14,7 +14,7 @@ Body size: enforced by FastAPI body size limit (set in main.py).
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import Response
 from pydantic import BaseModel
 
 from ..errors import api_error
@@ -44,7 +44,7 @@ async def export_docx_stateless(
     Stateless — nothing is stored server-side.
     """
     if body.parsed is None and not body.raw_output:
-        return api_error(  # type: ignore[return-value]
+        return api_error(
             code="EMPTY_BODY",
             message="Diperlukan setidaknya satu dari: parsed, raw_output.",
             status_code=400,

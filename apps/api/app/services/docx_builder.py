@@ -16,8 +16,10 @@ import io
 from datetime import UTC, datetime
 
 from docx import Document
+from docx.document import Document as DocumentType
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt
+from docx.text.paragraph import Paragraph
 
 from ..models.schemas import DebateType, ParsedReport, ReviewerResult
 
@@ -78,7 +80,7 @@ def export_filename() -> str:
 
 # ── Internal helpers ───────────────────────────────────────────────────────────
 
-def _set_default_style(doc: Document) -> None:
+def _set_default_style(doc: DocumentType) -> None:
     """Set Normal style to Times New Roman 12, justified."""
     style = doc.styles["Normal"]
     font = style.font
@@ -88,12 +90,12 @@ def _set_default_style(doc: Document) -> None:
     pf.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
 
-def _add_blank(doc: Document) -> None:
+def _add_blank(doc: DocumentType) -> None:
     p = doc.add_paragraph()
     _style_paragraph(p)
 
 
-def _style_paragraph(p, bold: bool = False, size: int | None = None) -> None:
+def _style_paragraph(p: Paragraph, bold: bool = False, size: int | None = None) -> None:
     """Apply font to all runs in a paragraph."""
     for run in p.runs:
         run.font.name = FONT_NAME
@@ -103,7 +105,7 @@ def _style_paragraph(p, bold: bool = False, size: int | None = None) -> None:
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
 
-def _add_heading(doc: Document, text: str, level: int = 1) -> None:
+def _add_heading(doc: DocumentType, text: str, level: int = 1) -> None:
     p = doc.add_paragraph()
     run = p.add_run(text)
     run.bold = True
@@ -112,12 +114,12 @@ def _add_heading(doc: Document, text: str, level: int = 1) -> None:
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
 
-def _add_body(doc: Document, text: str) -> None:
+def _add_body(doc: DocumentType, text: str) -> None:
     p = doc.add_paragraph(text)
     _style_paragraph(p)
 
 
-def _add_disclaimer(doc: Document, section_num: int | None) -> None:
+def _add_disclaimer(doc: DocumentType, section_num: int | None) -> None:
     p = doc.add_paragraph()
     run = p.add_run(DISCLAIMER_TEXT)
     run.bold = True
@@ -127,7 +129,7 @@ def _add_disclaimer(doc: Document, section_num: int | None) -> None:
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
 
-def _build_raw_fallback(doc: Document, raw_output: str | None) -> None:
+def _build_raw_fallback(doc: DocumentType, raw_output: str | None) -> None:
     _add_heading(doc, "HASIL REVIEW (Format Tidak Terstruktur)")
     _add_blank(doc)
     text = raw_output or "(Tidak ada output tersedia.)"
@@ -137,7 +139,7 @@ def _build_raw_fallback(doc: Document, raw_output: str | None) -> None:
         _style_paragraph(p)
 
 
-def _build_structured(doc: Document, report: ParsedReport) -> None:
+def _build_structured(doc: DocumentType, report: ParsedReport) -> None:
     sec = 1  # section counter
 
     # ── Titik Perdebatan ───────────────────────────────────────────────────────
@@ -194,7 +196,7 @@ def _build_structured(doc: Document, report: ParsedReport) -> None:
         _add_blank(doc)
 
 
-def _build_findings_table(doc: Document, reviewer: ReviewerResult) -> None:
+def _build_findings_table(doc: DocumentType, reviewer: ReviewerResult) -> None:
     """
     Build a bordered 3-column table: No | Aspek/Deskripsi | Rujukan.
     Rujukan count must equal len(findings) — even null ones get a cell.

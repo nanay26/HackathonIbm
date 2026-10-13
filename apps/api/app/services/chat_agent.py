@@ -10,13 +10,12 @@ from __future__ import annotations
 
 import logging
 import os
-import re
 from typing import Any
 
 import httpx
 
 from ..config import Settings
-from ..models.schemas import ConversationMessage, ParsedReport, ReviewJob
+from ..models.schemas import ConversationMessage, ReviewJob
 
 logger = logging.getLogger("dewan_penilai.chat_agent")
 
@@ -170,7 +169,7 @@ class ChatAgentService:
                         if candidates:
                             parts = candidates[0].get("content", {}).get("parts", [])
                             if parts and "text" in parts[0]:
-                                return parts[0]["text"]
+                                return str(parts[0]["text"])
                 except Exception:
                     continue
         raise RuntimeError("Gemini API calls failed")
@@ -209,7 +208,6 @@ class ChatAgentService:
         asks_originality = any(w in q_lower for w in ["orisinalitas", "kebaruan", "novelty", "gap", "tinjauan", "bab 2", "bab ii", "teori", "watson", "caring"])
         asks_revision = any(w in q_lower for w in ["revisi", "langkah", "perbaikan", "solusi", "jadwal", "rencana", "action", "bab 1", "rumusan"])
         asks_debate = any(w in q_lower for w in ["perdebatan", "debat", "kontradiksi", "penguatan", "silang", "titik perdebatan", "beda pendapat"])
-        asks_specific_aspect = re.findall(r"\[aspek:?\s*([^\]]+)\]", q_lower)
 
         sections: list[str] = []
 
@@ -232,7 +230,7 @@ class ChatAgentService:
         if asks_methodology and parsed:
             metod_rev = next((r for r in parsed.reviewers if r.key.value == "metodologi"), None)
             if metod_rev:
-                sections.append(f"\n🔍 **Catatan Reviewer Metodologi (Bab 3):**")
+                sections.append("\n🔍 **Catatan Reviewer Metodologi (Bab 3):**")
                 if metod_rev.verdict:
                     sections.append(f"*Status*: **{metod_rev.verdict}**")
                 if metod_rev.findings:
@@ -249,7 +247,7 @@ class ChatAgentService:
         if asks_originality and parsed:
             ori_rev = next((r for r in parsed.reviewers if r.key.value == "orisinalitas"), None)
             if ori_rev:
-                sections.append(f"\n💡 **Catatan Reviewer Orisinalitas (Bab 2 & Research Gap):**")
+                sections.append("\n💡 **Catatan Reviewer Orisinalitas (Bab 2 & Research Gap):**")
                 if ori_rev.verdict:
                     sections.append(f"*Status*: **{ori_rev.verdict}**")
                 if ori_rev.findings:
@@ -266,7 +264,7 @@ class ChatAgentService:
         if (asks_revision or "bagaimana cara" in q_lower or "bagaimana memperbaiki" in q_lower) and parsed:
             rev_rev = next((r for r in parsed.reviewers if r.key.value == "revisi"), None)
             if rev_rev:
-                sections.append(f"\n🛠️ **Panduan & Peta Revisi Terarah:**")
+                sections.append("\n🛠️ **Panduan & Peta Revisi Terarah:**")
                 if rev_rev.findings:
                     for f in rev_rev.findings:
                         sections.append(f"- **[{f.aspect}]**: {f.description}")

@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Any
 
 from ..models.schemas import (
-    ApprovalOption,
     ApprovalRequest,
     JobError,
     JobStatus,

@@ -16,8 +16,6 @@ import logging
 import re
 from typing import Any
 
-from ..models.schemas import DebatePoint, DebateType, Finding, ParsedReport, ReviewerKey, ReviewerResult
-
 logger = logging.getLogger("dewan_penilai.orchestrator")
 
 
@@ -110,10 +108,8 @@ def detect_debate_points(
         # PENGUATAN SILANG or KONTRADIKSI
         if len(matched_reviewers) >= 2:
             # Determine type
-            is_contradiction = False
             bodies_joined = " ".join(matched_reviewers.values()).lower()
             if any(w in bodies_joined for w in ["cukup", "layak", "sesuai", "baik"]) and any(w in bodies_joined for w in ["belum", "kurang", "lemah", "tidak", "ambigu", "cacat"]):
-                is_contradiction = True
                 debate_type = "KONTRADIKSI"
             else:
                 debate_type = "PENGUATAN SILANG"

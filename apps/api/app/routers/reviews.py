@@ -18,6 +18,7 @@ from fastapi.responses import JSONResponse, Response
 
 from ..config import get_settings
 from ..errors import api_error
+from ..limits import limiter
 from ..models.schemas import (
     ChatMessageRequest,
     ConversationMessage,
@@ -28,7 +29,6 @@ from ..models.schemas import (
     ReviewApprovalRequest,
     ReviewJob,
 )
-from ..limits import limiter
 from ..services.docx_builder import build_docx, export_filename
 from ..services.job_store import get_job_store
 from ..services.langflow_client import LangflowClient, LangflowMCPClient
@@ -268,16 +268,17 @@ async def chat_review(
     job = await store.get(review_id)
     conv_id = job.conversation_id if job and job.conversation_id else review_id
 
-    # 1. Save user question to DB
-    user_msg = store.get_db().add_chat_message(
-        review_id=review_id,
-        conversation_id=conv_id,
-        role="user",
-        content=body.content.strip(),
-    )
-
-    # 2. Retrieve history for context
-    history = store.get_db().get_chat_messages(conv_id)
+    db = store.get_db()
+    if db:
+        db.add_chat_message(
+            review_id=review_id,
+            conversation_id=conv_id,
+            role="user",
+            content=body.content.strip(),
+        )
+        history = db.get_chat_messages(conv_id)
+    else:
+        history = []
 
     # 3. Call ChatAgentService with full review result & context
     from ..services.chat_agent import ChatAgentService
@@ -292,12 +293,22 @@ async def chat_review(
     )
 
     # 4. Save assistant answer to DB
-    assistant_msg = store.get_db().add_chat_message(
-        review_id=review_id,
-        conversation_id=conv_id,
-        role="assistant",
-        content=answer_text,
-    )
+    if db:
+        assistant_msg = db.add_chat_message(
+            review_id=review_id,
+            conversation_id=conv_id,
+            role="assistant",
+            content=answer_text,
+        )
+    else:
+        assistant_msg = {
+            "id": "msg-fallback",
+            "review_id": review_id,
+            "conversation_id": conv_id,
+            "role": "assistant",
+            "content": answer_text,
+            "created_at": datetime.now(UTC).isoformat(),
+        }
 
     return JSONResponse(assistant_msg)
 
@@ -479,10 +490,10 @@ async def export_review(review_id: str) -> Response:
     job = await store.get(review_id)
 
     if job is None:
-        return api_error(code="EXPIRED", message="Review sudah kedaluwarsa.", status_code=410)  # type: ignore[return-value]
+        return api_error(code="EXPIRED", message="Review sudah kedaluwarsa.", status_code=410)
 
     if job.status != JobStatus.done:
-        return api_error(  # type: ignore[return-value]
+        return api_error(
             code="NOT_READY",
             message="Review belum selesai. Tunggu sampai status 'done'.",
             status_code=409,

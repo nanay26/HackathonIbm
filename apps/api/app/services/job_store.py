@@ -9,6 +9,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from abc import ABC, abstractmethod
+from datetime import UTC
 
 from ..models.schemas import ReviewJob
 from .database import DatabaseManager
@@ -100,9 +101,6 @@ class SQLiteJobStore(JobStore):
     async def increment_daily_count(self) -> None:
         self._db.increment_daily_count()
 
-    def get_db(self) -> DatabaseManager:
-        return self._db
-
 
 # ── In-memory implementation (kept for isolated unit tests if needed) ─────────
 
@@ -133,13 +131,13 @@ class InMemoryJobStore(JobStore):
 
     def _evict_expired(self) -> None:
         """Evicts expired jobs for test compatibility."""
-        from datetime import datetime, timezone
-        now = datetime.now(timezone.utc)
+        from datetime import datetime
+        now = datetime.now(UTC)
         to_delete = []
         for jid, j in self._jobs.items():
             created = j.created_at
             if created.tzinfo is None:
-                created = created.replace(tzinfo=timezone.utc)
+                created = created.replace(tzinfo=UTC)
             if (now - created).total_seconds() > self._ttl:
                 to_delete.append(jid)
         for jid in to_delete:
